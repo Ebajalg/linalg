@@ -19,7 +19,6 @@ class Matrix:
         self.dims = (rows, cols)
         self.values = [[0 for i in range(self.dims[1])]
                        for i in range(self.dims[0])]
-        self.steps_to_reduction = []
 
         # TODO: Swap error messages
         if values is None:
@@ -70,15 +69,15 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
                 other_M_T = other.transpose()
                 output_values = [[dot_product(a, b) for a in other_M_T.values]
                                  for b in self.values]
-        elif isinstance(other, int):
+                output_matrix = Matrix(self.dims[0], other.dims[1], values=output_values)
+        elif isinstance(other, int) or isinstance(other, float):
             output_values = [[other * a for a in self.values[i]]
-                             for i in range(self.values)]
+                             for i in range(len(self.values))]
+            output_matrix = Matrix(self.dims[0], self.dims[1], values=output_values)
         else:
             error_string = f"Object of type {type(other)} is not compatible with type Matrix for multiplication"
             raise ValueError(error_string)
 
-        output_matrix = Matrix(self.dims[0], other.dims[1], values=output_values)
-        output_matrix.show()
         return output_matrix
 
     def transpose(self):
@@ -104,19 +103,24 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
             raise ValueError("Matrix is not square hence a determinant cannot be found")
         return det
 
+    # TODO: Add adjugate function
+    def adjugate(self):
+        a_M = Matrix(*self.dims,
+                     [[self.values[i][j] for i in range(self.dims[0])] for j in range(self.dims[1])])
+        for i in range(a_M.dims[0]):
+            for j in range(a_M.dims[1]):
+                a_M.values[i][j] = ((-1) ** (i + j + 2)) * Matrix(self.dims[0] - 1,
+                                          self.dims[1] - 1,
+                                          [[a[b] for b in range(len(a)) if b != j] for r, a in
+                                          zip(range(len(self.values)), self.values) if r != i]
+                                          ).determinant()
+        return a_M
+
+
     # TODO: Add inverse function
     def inverse(self):
-        if self.dims[0] == self.dims[1]:
-            if self.det != 0:
-                i_M = Matrix(*self.dims, [[i+1 if (i == j) else 0 for j in range(self.dims[1])] for i in range(self.dims[0])])
-                for i in self.steps_to_reduction:
-                    i_M.values[i[0]] = list(map(lambda x: x / i[1], i_M.values[i[0]]))
-                    i_M.show()
-                    for a in range(i_M.dims[0]):
-                        if a != i[0]:
-                            i_M.values[a] = [v2 - i_M.values[a][i] * v1
-                                             for v1, v2 in zip(i_M.values[j], i_M.values[a])]
-                return i_M
+        i_M = self.adjugate() * (1/self.det)
+        return i_M
 
     # Returns row echelon form of the matrix
     def reduce(self):
@@ -125,11 +129,9 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
                      self.values.copy(),
                      reduced_matrix=True)
         l_1_rs = []
-        self.steps_to_reduction = []
         for i in range(r_M.dims[1]):
             for j in range(r_M.dims[0]):
                 if (r_M.values[j][i] != 0) and not (j in l_1_rs):
-                    self.steps_to_reduction.append((j, r_M.values[j][i]))
                     r_M.values[j] = list(map(lambda x: x / r_M.values[j][i], r_M.values[j]))
                     for a in range(r_M.dims[0]):
                         if a != j:
