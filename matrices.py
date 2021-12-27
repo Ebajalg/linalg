@@ -38,7 +38,7 @@ class Matrix:
 
         self.det = self.determinant()
 
-        # TODO: fix function calling loop
+        # TODO: fix function calling loop when new functions are made
         # if not reduced_matrix:
         #    self.r_m = self.reduce()
 
