@@ -20,21 +20,20 @@ class Matrix:
         self.values = [[0 for i in range(self.dims[1])]
                        for i in range(self.dims[0])]
 
-        # TODO: Swap error messages
         if values is None:
             self.input_values()
         else:
-            if list(map(len, values)) == [cols for i in range(rows)]:
-                if (len(values) == rows) and (len(values[0]) == cols):
+            if (len(values) == rows) and (len(values[0]) == cols):
+                if list(map(len, values)) == [cols for i in range(rows)]:
                     self.values = values
                 else:
-                    error_string = f"""Number of rows and columns does not match dimensions of inputted matrix: 
-Number of rows: {rows}
-Number of columns: {cols}
-Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
+                    error_string = "Inputted matrix is not uniform"
                     raise ValueError(error_string)
             else:
-                error_string = "Inputted matrix is not uniform"
+                error_string = f"""Number of rows and columns does not match dimensions of inputted matrix: 
+                Number of rows: {rows}
+                Number of columns: {cols}
+                Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
                 raise ValueError(error_string)
 
         self.det = self.determinant()
@@ -62,7 +61,6 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
             error_string = f"Object of type {type(other)} is not compatible with type Matrix for addition"
             raise ValueError(error_string)
 
-    # TODO: Add __mul__ property
     def __mul__(self, other):
         if isinstance(other, Matrix):
             if self.dims[1] == other.dims[0]:
@@ -103,7 +101,6 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
             raise ValueError("Matrix is not square hence a determinant cannot be found")
         return det
 
-    # TODO: Add adjugate function
     def adjugate(self):
         a_M = Matrix(*self.dims,
                      [[self.values[i][j] for i in range(self.dims[0])] for j in range(self.dims[1])])
@@ -116,8 +113,6 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
                                           ).determinant()
         return a_M
 
-
-    # TODO: Add inverse function
     def inverse(self):
         i_M = self.adjugate() * (1/self.det)
         return i_M
@@ -156,6 +151,8 @@ Inputted matrix dimensions: {len(values)}x{len(values[0])}"""
             for j in range(self.dims[1]):
                 self.values[i][j] = 'X'
                 self.show()
-                # TODO: filter input for only numerical values (loop, try)
                 val = input(">: ")
-                self.values[i][j] = int(val)
+                while not val.replace(".", "").replace("-", "").isnumeric():
+                    print(f"'{val}' is not numeric")
+                    val = input(">: ")
+                self.values[i][j] = float(val)
