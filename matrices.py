@@ -61,6 +61,10 @@ class Matrix:
             error_string = f"Object of type {type(other)} is not compatible with type Matrix for addition"
             raise ValueError(error_string)
 
+    # TODO: Add sub property
+    def __sub__(self,other):
+        pass
+
     def __mul__(self, other):
         if isinstance(other, Matrix):
             if self.dims[1] == other.dims[0]:
