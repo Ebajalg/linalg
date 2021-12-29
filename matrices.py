@@ -1,4 +1,5 @@
 from math import floor, ceil
+from polynomial import Polynomial
 
 
 def dot_product(v1, v2):
@@ -62,7 +63,7 @@ class Matrix:
             raise ValueError(error_string)
 
     # TODO: Add sub property
-    def __sub__(self,other):
+    def __sub__(self, other):
         pass
 
     def __mul__(self, other):
@@ -95,10 +96,12 @@ class Matrix:
                 det = self.values[0][0] * self.values[1][1] - self.values[0][1] * self.values[1][0]
             else:
                 det = sum([self.values[0][i] * ((-1) ** (i + 2)) * Matrix(self.dims[0] - 1,
-                                                               self.dims[1] - 1,
-                                                               [[a[b] for b in range(len(a)) if b != i] for r, a in
-                                                                zip(range(len(self.values)), self.values) if r != 0]
-                                                               ).determinant()
+                                                                          self.dims[1] - 1,
+                                                                          [[a[b] for b in range(len(a)) if b != i] for
+                                                                           r, a in
+                                                                           zip(range(len(self.values)), self.values) if
+                                                                           r != 0]
+                                                                          ).determinant()
                            for i in range(len(self.values[0]))
                            if self.values[0][i] != 0])
         else:
@@ -111,14 +114,14 @@ class Matrix:
         for i in range(a_M.dims[0]):
             for j in range(a_M.dims[1]):
                 a_M.values[i][j] = ((-1) ** (i + j + 2)) * Matrix(self.dims[0] - 1,
-                                          self.dims[1] - 1,
-                                          [[a[b] for b in range(len(a)) if b != j] for r, a in
-                                          zip(range(len(self.values)), self.values) if r != i]
-                                          ).determinant()
+                                                                  self.dims[1] - 1,
+                                                                  [[a[b] for b in range(len(a)) if b != j] for r, a in
+                                                                   zip(range(len(self.values)), self.values) if r != i]
+                                                                  ).determinant()
         return a_M
 
     def inverse(self):
-        i_M = self.adjugate() * (1/self.det)
+        i_M = self.adjugate() * (1 / self.det)
         return i_M
 
     # Returns row echelon form of the matrix
@@ -141,13 +144,24 @@ class Matrix:
         return r_M
 
     # Outputs visualisation of matrix
+    # TODO: revisit for best display when the strings are larger
     def show(self):
+        # Problem lies here
         max_val_length = max(list(map(lambda y: max(list(map(lambda x: len(str(x)), y))), self.values)))
         for i in self.values:
-            print("|", " ".join(list(map(lambda x: (' ' * floor((max_val_length * 2 - len(str(x))) / 2)) +
-                                                   str(x) +
-                                                   (' ' * ((ceil((max_val_length * 2 - len(str(x))) / 2)) - 1))
-                                         , i))), "|")
+            string_row = []
+            for x in i:
+                if isinstance(x, Polynomial):
+                    string_p = '+'.join([f"{x.p_cs[i]}x^{i}"
+                                        for i in x.p_cs.keys()]
+                                       ).replace('+-', '-').replace('x^0', '')
+                else:
+                    string_p = str(x)
+                string_row.append((' ' * floor((max_val_length * 2 - len(string_p)) / 2)) +
+                                   string_p +
+                                  (' ' * ((ceil((max_val_length * 2 - len(string_p)) / 2)) - 1)))
+
+            print("|", " ".join(string_row), "|")
 
     # Allows for the input of values in human-readable form
     def input_values(self):
