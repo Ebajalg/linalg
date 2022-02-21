@@ -75,7 +75,22 @@ class Polynomial:
     def __rsub__(self, other):
         return Polynomial(str(other)) - self
 
-    # TODO: Add functionality for __rsub__
+    def differentiate(self):
+        output_p = Polynomial("")
+        for a, b in self.p_cs.items():
+            if a > 0:
+                output_p.p_cs[a-1] = b*a
+        output_p.powers = list(output_p.p_cs.keys())
+        output_p.constants = list(output_p.p_cs.values())
+        return output_p
+
+    def integrate(self):
+        output_p = Polynomial("")
+        for a, b in self.p_cs.items():
+            output_p.p_cs[a + 1] = b / (a + 1)
+        output_p.powers = list(output_p.p_cs.keys())
+        output_p.constants = list(output_p.p_cs.values())
+        return output_p
 
     def f(self, x):
         return sum(self.p_cs[i] * (x ** i) for i in self.p_cs)

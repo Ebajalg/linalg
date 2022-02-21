@@ -144,6 +144,7 @@ class Matrix:
         return r_M
 
     # Outputs visualisation of matrix
+    # TODO: Try to convert into __str__ method
     # TODO: revisit for best display when the strings are larger
     def show(self):
         # Problem lies here
@@ -153,12 +154,12 @@ class Matrix:
             for x in i:
                 if isinstance(x, Polynomial):
                     string_p = '+'.join([f"{x.p_cs[i]}x^{i}"
-                                        for i in x.p_cs.keys()]
-                                       ).replace('+-', '-').replace('x^0', '')
+                                         for i in x.p_cs.keys()]
+                                        ).replace('+-', '-').replace('x^0', '')
                 else:
                     string_p = str(x)
                 string_row.append((' ' * floor((max_val_length * 2 - len(string_p)) / 2)) +
-                                   string_p +
+                                  string_p +
                                   (' ' * ((ceil((max_val_length * 2 - len(string_p)) / 2)) - 1)))
 
             print("|", " ".join(string_row), "|")
